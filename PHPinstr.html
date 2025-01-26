@@ -1,1 +1,214 @@
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>PHP instructions</title>
+</head>
+
+
+    <body bgcolor="#cceeaa">
+
+<h1>PHP / ECLIPSE istruzioni di impostazione</h1>
+
+<h3>Scopo di questo documento</h3>
+<p>
+Raccogliere le operazioni necessarie per ottenere l'ambiente
+di sviluppo per PHP funzionante in ECLIPSE con debug classico.
+</p>
+<h3>Come sono arrivato fin qui?
+</h3>
+<p>Seguendo le istruzioni di questo video:</p>
+<a href="https://www.youtube.com/watch?v=_cSQKOajwlA" target="blank">
+https://www.youtube.com/watch?v=_cSQKOajwlA</a>
+
+<p>
+<a href="https://www.youtube.com/watch?v=_cSQKOajwlA" target="blank">
+Configure XDebug With Eclipse PDT (PHP Development Tool ) Windows 11 2022
+</a>
+</p>
+
+<p>
+Anche il seguente video serve come guida:
+</p>
+<p>
+<a href="https://www.youtube.com/watch?v=huoyx1Ocxv0" target="blank">
+how to debug php in eclipse from web browser</a>
+</p>
+comunque cercando 
+"eclipse and xdebug setup for php debugging"
+si trovano anche diverse altre spiegazioni.
+
+
+<p>
+Ci sono alcune cose non proprio chiare e quindi ho riassunto
+qui i punti importanti.
+</p>
+
+
+<hr>
+<h3>Sequenza delle operazioni</h3>
+Prima di tutto ho installato XAMPP (facilissimo)
+<p>
+esso fornisce un servr PHP + DB
+</p>
+la cartella <b>C:\xampp\htdocs</b>
+contiene i files che vengono pubblicati dal server
+visibili su localhost (127.0.0.1)
+<p>
+<p>
+Poi ho installato Eclipse for PHP e quindi ho puntato la
+cartella di lavoro (Workspace) in <b>C:\xampp\htdocs</b>,
+oppure, meglio, ho creato una sottocartella
+<b>C:\xampp\htdocs\phpapps</b>,
+in tal modo i progetti PHP sono visibili da localhost.
+<p>
+Ho modificato le proprietà del file
+<b>C:\xampp\xampp-control.ini</b>
+assegnando il controllo completo a tutti gli utenti di windows
+altrimenti quando chiudi il pannello di controllo si genera
+un errore di accesso al file.
+</p>
+
+<p>
+Ho aggiunto l'estensione <b>xdebug</b> scaricando il file
+<b>php_xdebug.....dll</b>
+dal sito <a href="https://xdebug.org/">https://xdebug.org/</a> 
+e copiandolo in <b>xampp\php\ext</b> e modificato il file
+<b>xampp\php\php.ini</b>
+aggiungendo in fondo al file le righe seguenti:
+<pre>
+[XDEBUG]
+zend_extension = "C:\xampp\php\ext\php_xdebug.dll"
+xdebug.mode=debug
+xdebug.client_host = 127.0.0.1
+xdebug.client_port = 9003
+</pre>
+A questo punto, posso riavviare il server XAMPP per caricare il nuovo debugger
+visibile anche nel phpinfo().
+
+<p>
+Infine ho configurato eclipse come da video iniziale:
+</p>
+
+<p>
+In un nuovo progetto PHP bisogna aggiungere,
+nelle configurazioni da lanciare
+(Run -- Debug Configurations...),
+la voce PHP CLI Application.
+</p>
+<p>
+Attivare "Alternate PHP" e scegliere "installed PHP" quindi EDIT
+</p>
+<p>
+puntarlo all'eseguibile "<b>xampp\php\php.exe</b>"
+</p>
+<p>
+e poi nel tab Debugger
+</p>
+<p>
+scegliere Xdebug su porta 9003
+</p>
+<p>
+Infine come PHP File puntare al sorgente di interesse e fine.
+</p>
+
+<p>
+Non usare altri modi che vanno in conflitto.
+Non attivare xampp, si avvia da debugger.
+</p>
+
+<hr>
+<h2>WOW - UAU</h2>
+
+Adesso son riuscito ad usare anche l'altro modo di debug.
+
+<h3>Esistono due modi per il debug</h3>
+<ul>
+<li>
+il primo descritto sopra (PHP CLI Application) che invia i
+risultati sulla console, dunque senza l'uso del browser.
+<li>
+il secondo descritto di seguito (PHP Web Application) che
+invece usa il browser come interfaccia naturale.
+</ul>
+<p>
+Per questo secondo modo, rispetto al primo bisogna fare solo due cose
+</p>
+
+<a href="" name="anyquisopra"></a>
+<ul>
+<li>la prima)</li>
+</ul>
+
+<p>
+andare sotto Window -->> Preferences
+<br>
+e poi PHP -->> Debug -->> Debuggers
+<br>
+quindi aprire la configurazione di Xdebug e cambiare la voce
+"Accept remote session (JIT)" in "any" oppure "prompt"
+</p>
+
+<ul>
+<li>la seconda)</li></ul>
+
+creare una configurazione di tipo "PHP Web Application" dal menu
+<br>
+Run -->> Debug Configurations
+<br>
+e installare l'estensione "Xdebug Helper" nel browser che si vuole usare
+
+<h3>Note aggiuntive del secondo modo di debug (via browser)</h3>
+
+La porta 9003 configurata in precedenza non deve per forza essere quella,
+il tutto funziona benissimo anche con la porta 9000 (default).
+
+<p>Come requisito base
+bisogna avviare XAMPP <b>prima</b> di avviare ECLIPSE.</p>
+
+<p>
+Adesso posso quindi avviare, in eclipse, la seconda
+configurazione di debug,
+che si mette in attesa dei comandi del browser,</p>
+
+<img src="XDebugExtension.png">
+<p>Adesso posso attivare l'estensione XDEBUG nel browser
+(icona del baco verde), ed accedere alla pagina del progetto
+via localhost,</p>
+<p>eclipse si blocca sulla prima riga (o su un breakpoint).
+Qui posso vedere le variabili, eseguire un passo per volta,
+procedere in run...</p>
+<p>
+A questo punto, quando la pagina web è inviata al browser
+che l'aspetta, la sessione si conclude ma, essendo un processo
+multisessione, basta rinfrescare la pagina dal browser
+per ribloccare l'esecuzione sulla prima riga.</p>
+
+<h4>buon lavoro di sviluppo</h4>
+
+<h3>Nota ulteriore via browser</h3>
+<p>
+Quando si configura la "PHP Web Application" ho scoperto quanto sia
+importante inserire il percorso corretto del file da usare, come ho
+evidenziato nei cerchi rossi dell'immagine che segue:
+</p>
+<img src="PHPinstrXdebug.png">
+<p>
+Per errore non avevo inserito la prima parte "/phpapps/" dato che
+avevo lasciato la spunta su "Auto Generate". Questo provocava
+l'avvio del browser su un percorso inesistente visto che avevo
+messo tutto sotto "phpapps" con conseguente frustrazione.
+Però ho scoperto che se dal browser si accede al percorso corretto
+questo provoca l'avvio della sessione di debug in ECLIPSE, per cui
+fare attenzione alla cosa.
+</p>
+<p>
+Adesso, ogni volta che col browser accedo alla pagina del progetto,
+automaticamente ECLIPSE entra in debug, per disattivarlo devo cambiare
+"any" in "off" nella voce "Accept remote session (JIT)" (vedi
+<a href="#anyquisopra" >qui sopra</a>). In alternativa basta avviare
+ECLIPSE prima di XAMPP ma risulta meno comodo.
+</p>
+</body>
+</html>
